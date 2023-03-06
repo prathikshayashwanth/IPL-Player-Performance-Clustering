@@ -1,0 +1,179 @@
+
+#INDIAN PREMEIR LEAGUE: GAUGING PLAYER PERFORMANCE
+
+
+# Analytic technique applied:
+
+# In order to find the players with high performance and comparing their salary with performance we have used the cluster technique to categorize players into different clusters according to their performance and comparing it with salary bidding. Clustring is the best technique to find different groups, where within group there is homogeneity and with other group there is heterogeneity. We have been successfully able to draw conclusion adopting the cluster technique. 
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Import the IPL player data from CSV file and save it in ipdata
+```{r}
+ipdata <- read.csv("clipboard", sep = "\t" , header = T)
+summary(ipdata)
+
+```
+
+# Check if any data is missing in any of the columns in the given file
+
+```{r}
+sum(is.na(ipdata))
+missing <- data.frame(Missing = colSums(is.na(ipdata)))
+missing
+
+```
+
+# There are 70 players with different performance, which need to be grouped in different cluster as per their performance. For creating clusters, column 3 to 10 showing the different performance rating were selected in ipdata
+
+# Normalization of data is done using SCALE
+
+
+```{r}
+library(dplyr)
+ipscl <- scale(ipdata[,c(3:10)])
+
+
+```
+
+# Run kmeans model to create clusters, starting with 3 clusters
+
+```{r, echo = TRUE}
+
+set.seed(123)
+model2 <- kmeans(ipscl,3)
+model2
+
+ipdata2 <- data.frame(ipdata)
+ipdata2$cluster <- model2$cluster
+
+library(factoextra)
+
+fviz_nbclust(ipscl,kmeans, method = "wss")
+fviz_nbclust(ipscl,kmeans, method = "silhouette")
+
+```
+
+
+# Plotting 3 cluster on graph shows the different color clusters
+```{r, echo = TRUE}
+
+colors = c("purple","blue","green")
+ggplot(data = ipdata2, aes(x =Salary , y =Runs+Avg+SR+Hundreds+Fifties+Fours+Sixes , color = factor(cluster))) + 
+  geom_point() +
+  scale_color_manual(values = colors)
+
+```
+
+## Interpretation
+# In 3 clusters, we saw that 47.5% of the variance in the data is explained by cluster solution.  
+
+# Cluster 1 = 25, These 25 players have very high performance & high mean value of Runs, Fifties, Fours and Sixes Accordingly, they have higher salary than cluster 3 & 2 but there are many good players getting lower salary as evident from purple color. 
+#(Within cluster sum of square(WCSS) - 189.36). 
+
+# Cluster 2 = 21, Many players have good performance but their salary is lower. Some have good Average and Striking rate but lower Runs, Fours and Sixes but better than 3rd cluster. However, even after having better Runs,Fifties, Fours and Sixes ratio maximum players have very low salary. This shows there is disparity between players salary and their performance as evident from blue color. 
+# # (Within cluster sum of square (WCSS) - 55.79.
+
+# Cluster 3 = 24, has all other players with lower Runs, Avg, lower Striking rate, no Hundreds, lower Fifties, Fours and Sixes lower than 1st and 2nd cluster. However, salary of some players is very high that does not reconcile with their performance as evident from green color. 
+# (Within cluster sum of square (WCSS) - 44.40)
+
+# Within cluster sum of squares by cluster:
+#[1] 189.36774  55.79600  44.40389
+#(between_SS / total_SS =  47.5 %)
+
+
+## Run kmeans model to create clusters, using 4 clusters to see difference
+
+```{r, echo = TRUE}
+
+set.seed(123)
+model3 <- kmeans(ipscl,4)
+model3
+
+ipdata3 <- data.frame(ipdata)
+ipdata3$cluster <- model3$cluster
+
+
+```
+
+# Plotting 4 cluster on graph shows the different color clusters
+```{r, echo = TRUE}
+colors = c("purple","blue","green","red")
+ggplot(data = ipdata3, aes(x =Salary , y =Runs+Avg+SR+Hundreds+Fifties+Fours+Sixes , color = factor(cluster))) + 
+  geom_point() +
+  scale_color_manual(values = colors)
+
+```
+## Interpretation
+# In 4 cluster, we saw that 56.8% of the variance in the data is explained by cluster solution.  
+
+# Cluster 1 = 11, This cluster have very good performance players & has a high mean value for Runs, Avg, striking rate, Fifties, Fours, Sixes and accordingly get highest salaries except few players in purple who get lower salary even with high performance as evident in purple color. 
+# (Within cluster sum of square(WCSS)- 107.44). 
+
+# Cluster 3 = 20, This cluster have higher performance players but maximum of these players get lower salary. There is disparity in the performance of players and their salary as evident with green color. 
+# (Within cluster sum of square (WCSS) - 53.07%.)
+
+# Cluster 2 = 17, these are average players have further lower Runs, lower average rate with lowest salary. Even though the performance is better than cluster 4 players but their salary is lowest except one who get very high salary as evident in blue color. 
+# (Within cluster sum of square (WCSS) - 38.11%)
+
+
+# Cluster 4 = 22, this cluster have lowest runs, Average rate, striking rate, Fifties,Fours, Sixes, overall performance is lower, but some players are getting very high salary as evident in red color.  
+# (Within cluster sum of square (WCSS) - 39.77)
+
+#Within cluster sum of squares by cluster:
+#  [1] 107.43806  38.11145  53.06997  39.76758
+#(between_SS / total_SS =  56.8 %)
+
+
+
+```{r, echo = TRUE}
+
+set.seed(123)
+model4 <- kmeans(ipscl,5)
+model4
+
+ipdata4 <- data.frame(ipdata)
+ipdata4$cluster <- model4$cluster
+
+
+```
+
+# Plotting 5 cluster on graph shows the different color clusters
+```{r, echo = TRUE}
+colors = c("purple","blue","green","red","yellow")
+ggplot(data = ipdata4, aes(x =Salary , y =Runs+Avg+SR+Hundreds+Fifties+Fours+Sixes , color = factor(cluster))) + 
+  geom_point() +
+  scale_color_manual(values = colors)
+
+```
+# Interpretation
+# In 5 cluster, we saw that 63% of the variance in the data is explained by cluster solution.  
+
+# Cluster 1 = 14, This cluster has high performers with a high mean value for Runs, Avg, striking rate, Fifties, Fours, Sixes and accordingly get highest salaries with some players getting very low salary as evident in purple color. 
+# (Within cluster sum of square(WCSS)- 76.06). 
+
+# Cluster 5 = 6 This cluster shows good performance in terms of Runs, AVg, Fifties, fours and sixes but two of the player are getting lower salary.
+# (Within cluster sum of square (WCSS) - 36.94%.)
+
+# Cluster 3 = 17, these players have satisfactory performance in Runs, average rate, striking rate, fifties, fours, sixes, but their salary is lowest among all other clusters players.  
+# (Within cluster sum of square (WCSS) - 34.26%)
+
+
+# Cluster 4 = 21 and cluster 2 = 12, these two clusters have lowest performance players but some players get very high salary.  
+# (Within cluster sum of square (WCSS) 4- 35.02% and 2- 21.83%)
+
+#Within cluster sum of squares by cluster:
+#[1] 76.06367 21.83154 34.26063 35.02078 36.94758
+# (between_SS / total_SS =  63.0 %)
+
+#Conclusion: 4 clusters are ideal clusters that explains the maximum disparity. Creating 5 clusters does not bring much value or highlight anything significant. 
+# Players in cluster 4 performs lowest but still some players get higher salary as evident from red color
+# Players in cluster 2 performs better than cluster 4 but their salary is lowest as evident from blue color
+# Players in cluster 3 performs even better than 2, but get lower salary as evident from green color cluster
+# Players in cluster 1 performs best and got higher salary except few who are getting lower salary.
+
+# Overall there is too much disparty among the players remuneration and their performance. Bidders are paying too high price for some underperformer player & paying extremly low for some high performing players. 
